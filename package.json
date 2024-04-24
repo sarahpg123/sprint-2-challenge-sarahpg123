@@ -1,0 +1,7 @@
+{
+  "name": "sprint-2-challenge",
+  "devDependencies": {
+    "jest": "29.7.0",
+    "jsdom": "24.0.0"
+  }
+}

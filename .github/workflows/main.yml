@@ -1,0 +1,84 @@
+name: Run Tests and Report Results
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  grade-assignment:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install NPM dependencies 🚚
+      run: npm install
+
+    - name: STUDENT, FIND YOUR TEST RESULTS HERE! 🧪
+      run: |
+        set +e  # Prevent script from stopping on errors
+        npx jest mvp.test.js --json --outputFile=results.json
+        exit_code=$?
+        echo "ERROR_FLAG=$exit_code" >> $GITHUB_ENV
+        set -e  # Re-enable script stopping on errors
+      shell: bash
+
+    - name: Process test results ⚙️
+      if: always()  # This ensures that this step runs even if the previous step fails
+      run: |
+        num_passed_tests=0
+        num_total_tests=1  # Default to 1 to avoid divide by zero
+        if [ -f results.json ]; then
+          num_passed_tests=$(jq '.numPassedTests' results.json)
+          num_total_tests=$(jq '.numTotalTests' results.json)
+          if [ "$num_total_tests" -eq 0 ]; then
+            num_total_tests=1
+          fi
+        fi
+        ratio=$(echo "scale=2; $num_passed_tests / $num_total_tests" | bc)
+        echo "PERCENTAGE=$ratio" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Post results to API 📤
+      run: |
+        commit_hash=$(git rev-parse HEAD)
+        commit_timestamp=$(git show -s --format=%cI HEAD)  # ISO 8601 format
+        commit_email=$(git show -s --format=%ce HEAD)
+        commit_message=$(git log -1 --pretty=%B)  # Fetch the last commit message
+        repo_name="${GITHUB_REPOSITORY#*/}"
+        json_payload=$(jq -n \
+                        --argjson test_results ${PERCENTAGE} \
+                        --arg repo_name "$repo_name" \
+                        --arg actor "${{ github.actor }}" \
+                        --arg commit_hash "$commit_hash" \
+                        --arg commit_timestamp "$commit_timestamp" \
+                        --arg commit_email "$commit_email" \
+                        --arg commit_message "$commit_message" \
+                        '{test_results: $test_results, repo_name: $repo_name, actor: $actor, commit_hash: $commit_hash, commit_timestamp: $commit_timestamp, commit_email: $commit_email, commit_message: $commit_message}')
+        curl -X POST https://webapis.bloomtechdev.com/grades/report \
+        -H "Content-Type: application/json" \
+        -d "$json_payload"
+      shell: bash
+      env:
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        PERCENTAGE: ${{ env.PERCENTAGE }}
+
+    - name: Mark workflow failed if not all tests pass
+      if: always()  # Ensure this step runs regardless of previous step outcomes
+      run: |
+        test_passed=$(echo "$PERCENTAGE * 100" | bc)
+        echo "Finished with $(echo "$PERCENTAGE * 100" | bc)% tests passing"
+        if [ $(echo "$test_passed < 100" | bc) -eq 1 ]; then
+          echo "Not all tests passed. Marking the workflow run as failed."
+          exit 1
+        else
+          echo "All tests passed. Workflow run will be marked as successful."
+        fi
+      shell: bash
+      env:
+        PERCENTAGE: ${{ env.PERCENTAGE }}
