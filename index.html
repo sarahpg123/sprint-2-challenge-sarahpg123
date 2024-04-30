@@ -5,34 +5,132 @@
   <title>Web Sprint 2 Challenge</title>
   <script id="challenge">
     // 👉 CHALLENGE 1
-    function profileActivation(profile, reason) {
-
+    function profileActivation(profile, reason) { //PASSEDD 
+      
+      if(profile.active){
+      
+      if(reason){
+      return{
+        active: false,
+        reason: reason
+      }
+      }else{
+      return "confirm status manually"
+      
+      }
+      
+    } else if(!profile.active){
+      
+      return{
+      active:true,
+      }
     }
+    } 
+
 
     // 👉 CHALLENGE 2
+    // this sets x & y to 0 or "start" once they get clicked then it will define them. 
+    // becuase x,y cant start at 1 (it wouldnt make sense)
+    // this sets the coordinates to what is selected? but it isnt letting me go through the coordinates that are from 1-3 but only 0-2 maybe?? 
     function mineSweeper(grid, x, y) {
 
+    if(x < 1 || x > 3 || y < 1 || y > 3){
+      return "invalid coordinates"
     }
+    
+    const defaultx = x - 1;
+    const defaulty = y - 1;
+    
+   
+
+    const coordinates = grid[defaulty][defaultx];
+    
+  
+    if ( coordinates  === "🟥"){
+    return "🟥 💀"
+    }
+    else if (coordinates === "🟦"){
+    return "🟦 🥳"
+    }
+    else{
+      return "unknown coordinates"
+    }
+  }
+
+  
+// Tests 5, 7, and 11 are all failing and returning the opposite assigned string for the coordinate clicked. 
+// like if its supposed to be a blue square its returning a red one ?? maybe because its set to -1 its skipping to the nearest block? 
+
+
 
     // 👉 CHALLENGE 3
-    function booleanize(obj) {
+    function booleanize(obj){   //--PASSED-
+   
+  let theobject= {}
 
+  // the length of the obj's prop or "i"
+  for (let key in obj) {
+    if (key.length > 9) {
+        return "shorten all prop names to 9 chars or less";
+      }
+  // this defines the value of the prop known as 'i'
+      const propvalue = obj[key];
+    
+  // this sets the parameters for the propvalue to find the boolean and the undefined 
+      if (propvalue === 0) {
+        obj[key] = false;
+      } else if (propvalue === 1) {
+        obj[key] = true;
+      } else if (propvalue === null) {
+        delete obj[key];
     }
+  }
+  // this truens the object that is being booleanized
+  return obj;
+    }
+
+    
 
     // 👉 CHALLENGE 4
-    function scrub(text, forbidden) {
+    function scrub(text, forbidden) {  //--PASSED--
 
+// this sets the last perameter that returns the original text with no bad words
+    if (!text || !forbidden || forbidden.length === 0){ 
+      return text; 
     }
+// this splits the text(sentence) into words and isolates them
+    let words = text.split(' ')
+// isolates each word (now were in the words portion)
+    for(let i = 0; i < words.length; i++){
+// this replaces each badwords with the xx's and defines each badword
+      if (forbidden.indexOf(words[i]) !== -1){
+        words[i] = 'x'.repeat(words[i].length);
+      }
+ // this removes allt he punctuation - put this last always or all the tests wont run-   
+      words[i] = words[i].replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
+    }
+// this joins all of the words back into the sentence <3 
+    text = words.join(' ')
+    return text
+    }
+
+
+
 
     // 👉 CHALLENGE 5 (bonus, NOT graded)
-    function normalizePhoneNumber(num) {
+    function normalizePhoneNumber(num) {    //--PASSED--
 
+    return `(${num[0]}${num[1]}${num[2]}) ${num[3]}${num[4]}${num[5]}-${num[6]}${num[7]}${num[8]}${num[9]}`; 
     }
+
 
     // 👉 CHALLENGE 6 (bonus, NOT graded)
     function diceRolls() {
 
     }
+
+
+
 
     // 🧪 DO NOT make any changes below this line ===================
     globalThis.challengeVersion = 1

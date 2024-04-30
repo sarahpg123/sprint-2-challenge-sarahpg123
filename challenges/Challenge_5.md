@@ -15,6 +15,16 @@ function normalizePhoneNumber(num)
 1. Format the input string `num` into the phone number format: "(XXX) XXX-XXXX".
 2. You can assume that all entries will be exactly 10 digits long.
 
+
+NOTES: 
+
+Brainstorm: 
+OKay sooooo we need to split it in to a length. Wtih the length you have to define the location of the array in num. so something like
+ "(`$num[0] + num[1] + num[2])+" " +"num[3] + num[4] + num[5]" + "-" + "num[6] + num[7] + num[8] + num[9]"
+Above is what is needed to be returned but maybe theres a way to simplify the array and place it in as a string. 
+If it ony takes 10 digits (and wasnt already assumed) I would need to set the parameters of the number length to 10 (but its already done for me)
+
+
 ### Examples
 
 #### Example 1

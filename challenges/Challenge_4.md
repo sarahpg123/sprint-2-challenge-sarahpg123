@@ -17,6 +17,26 @@ function scrub(text, forbidden)
 2. Ensure no punctuation is used in the text.
 3. If `text` is empty or there are no forbidden words, return the original text.
 
+
+NOTES: 
+
+- so I need to recognixe the objects that are in the array that need to 
+actually be replaced with x 
+- you need to split the words becuase words is an array (let words = text.split(' '))
+- if the word is forbidden, replace with 'x' 
+if (forbidden.index0f(word) !== -1){
+  words[i] = 'x'.repeat(word.length) The indexOf method is used to find the index of a given element in an array or a substring in a string. In this case, we're trying to check if a string (word) exists in an array (forbidden).
+}
+- then remove the punctuation from the words in the array 
+words[i] = words[i].replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+- you would use the join expression for the array to join the new string together in the string: text = words.join(' ')
+
+
+
+
+
+
+
 ### Examples
 
 #### Example 1
@@ -49,7 +69,7 @@ Expected Output:
 "lost somewhere in time"
 ```
 
-#### Example 4
+#### Example 4 (NOTE: THIS ONE PASSES)
 ```javascript
 let result = scrub("aces high", ["high", "aces", "hearts"]);
 console.log(result);
